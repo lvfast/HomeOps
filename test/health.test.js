@@ -20,3 +20,13 @@ test("GET /health returns ok status", async () => {
   assert.equal(response.status, 200);
   assert.deepEqual(response.body, { status: "ok" });
 });
+
+test("unknown route returns JSON 404", async () => {
+  const response = await request(app).get("/unknown-route");
+
+  assert.equal(response.status, 404);
+  assert.deepEqual(response.body, {
+    error: "Not Found",
+    message: "Route not found",
+  });
+});
