@@ -21,6 +21,13 @@ test("GET /health returns ok status", async () => {
   assert.deepEqual(response.body, { status: "ok" });
 });
 
+test("GET /ready returns ready status", async () => {
+  const response = await request(app).get("/ready");
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.body, { status: "ready" });
+});
+
 test("unknown route returns JSON 404", async () => {
   const response = await request(app).get("/unknown-route");
 
