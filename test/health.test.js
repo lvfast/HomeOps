@@ -4,6 +4,16 @@ const request = require("supertest");
 
 const app = require("../src/app");
 
+test("GET / returns API status", async () => {
+  const response = await request(app).get("/");
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.body, {
+    name: "HomeOps API",
+    status: "running",
+  });
+});
+
 test("GET /health returns ok status", async () => {
   const response = await request(app).get("/health");
 
