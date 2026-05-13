@@ -53,5 +53,7 @@ AGENTS.md
 GLOBAL_AGENTS.md
 PROJECT_BRIEF.md
 
-# Github
-.github/
+# GitHub files
+.github/*
+!.github/ISSUE_TEMPLATE/
+!.github/ISSUE_TEMPLATE/**
