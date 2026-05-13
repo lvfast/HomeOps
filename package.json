@@ -1,0 +1,29 @@
+{
+  "name": "homeops",
+  "version": "1.0.0",
+  "description": "HomeOps is a self-hosted mini SRE platform for monitoring personal services running on a homelab or VPS.",
+  "main": "src/index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "echo \"No automated tests yet\""
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lvfast/HomeOps.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lvfast/HomeOps/issues"
+  },
+  "homepage": "https://github.com/lvfast/HomeOps#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

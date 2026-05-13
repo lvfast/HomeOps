@@ -15,7 +15,7 @@ At this stage, the project focuses on:
 - defining small milestones
 - building the project step by step
 
-The application code has not been built yet.
+The first minimal backend API has been added. It currently exposes a health check endpoint at `/health`.
 
 ## Intended MVP
 
@@ -48,9 +48,47 @@ This repository currently contains documentation and project workflow files.
 - `GLOBAL_AGENTS.md`: broader agent instructions copied into the project
 - `PROJECT_BRIEF.md`: main product brief for HomeOps
 - `README.md`: quick entry point for understanding the project
+- `package.json`: Node.js project metadata, scripts, and dependencies
+- `package-lock.json`: exact dependency versions installed by npm
+- `src/`: backend API source code
 - `docs/`: detailed learning, workflow, architecture, and operations notes
 
-The app source code will be added later, after the repository foundation is clear.
+The app source code is intentionally small right now. More components will be added one milestone at a time.
+
+## Local Development
+
+Requirements:
+
+- Node.js
+- npm
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the backend API:
+
+```bash
+npm start
+```
+
+Verify the health check endpoint in your browser:
+
+```text
+http://localhost:3000/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+The server reads `APP_PORT` from the environment. If `APP_PORT` is not set, it uses `3000`.
 
 ## Learning Workflow
 
