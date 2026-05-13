@@ -74,6 +74,12 @@ Start the backend API:
 npm start
 ```
 
+Run tests:
+
+```bash
+npm test
+```
+
 Verify the health check endpoint in your browser:
 
 ```text
