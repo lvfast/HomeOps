@@ -37,6 +37,21 @@ The first useful version of HomeOps should let a user:
 - `docs/`: beginner-friendly workflow, architecture notes, glossary, runbook, and milestones
 - `docs/learning-log.md`: place to record what was learned after each task
 
+## Repository Structure
+
+This repository currently contains documentation and project workflow files.
+
+- `.github/`: GitHub templates and workflow configuration
+- `.env.example`: safe example of environment variables the project may need
+- `.gitignore`: tells Git which local files should not be committed
+- `AGENTS.md`: rules for how Codex should mentor and work in this repo
+- `GLOBAL_AGENTS.md`: broader agent instructions copied into the project
+- `PROJECT_BRIEF.md`: main product brief for HomeOps
+- `README.md`: quick entry point for understanding the project
+- `docs/`: detailed learning, workflow, architecture, and operations notes
+
+The app source code will be added later, after the repository foundation is clear.
+
 ## Learning Workflow
 
 HomeOps is built with small, reviewable tasks.
