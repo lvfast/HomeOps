@@ -54,9 +54,35 @@ A check that verifies code behaves as expected.
 
 A tool for packaging an application with its runtime environment.
 
+## Docker Compose
+
+A tool for running multiple containers together using a `docker-compose.yml`
+file. In HomeOps, it is used to start PostgreSQL and Redis for local
+development.
+
 ## Container
 
 A running isolated environment created from a Docker image.
+
+## PostgreSQL
+
+A relational database. HomeOps will use it to store services, health checks,
+incidents, and notifications.
+
+## Redis
+
+An in-memory data store. HomeOps will use it later for background jobs and
+queues.
+
+## Prisma
+
+A database toolkit for Node.js. HomeOps uses it to define the database schema,
+create migrations, and generate a database client.
+
+## Migration
+
+A versioned database change. It records how the database structure changes over
+time.
 
 ## Deployment
 

@@ -1,7 +1,6 @@
 const app = require("./app");
+const { config } = require("./config");
 
-const port = process.env.APP_PORT || 3000;
-
-app.listen(port, () => {
-  console.log(`HomeOps API is running on http://localhost:${port}`);
+app.listen(config.appPort, () => {
+  console.log(`HomeOps API is running on http://localhost:${config.appPort}`);
 });

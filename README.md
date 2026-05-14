@@ -6,7 +6,7 @@ The goal is to build a production-like monitoring and incident management system
 
 ## Current Status
 
-This repository is currently in the beginner setup phase.
+This repository is in the backend foundation phase.
 
 At this stage, the project focuses on:
 
@@ -16,6 +16,9 @@ At this stage, the project focuses on:
 - building the project step by step
 
 The first minimal backend API has been added. It currently exposes a health check endpoint at `/health`.
+
+Runtime configuration, Docker Compose services, and the first Prisma database
+schema are being added before the service management APIs.
 
 ## Intended MVP
 
@@ -61,11 +64,30 @@ Requirements:
 
 - Node.js
 - npm
+- Docker Desktop, for PostgreSQL and Redis
 
 Install dependencies:
 
 ```bash
 npm install
+```
+
+Create a local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Start PostgreSQL and Redis:
+
+```bash
+docker compose up -d postgres redis
+```
+
+Run the first database migration:
+
+```bash
+npm run prisma:migrate
 ```
 
 Start the backend API:
@@ -96,6 +118,9 @@ Expected response:
 
 The server reads `APP_PORT` from the environment. If `APP_PORT` is not set, it uses `3000`.
 
+The database connection is read from `DATABASE_URL`. Redis is configured through
+`REDIS_URL`, but Redis is not used by application logic yet.
+
 ## Learning Workflow
 
 HomeOps is built with small, reviewable tasks.
@@ -115,6 +140,5 @@ For each task, the workflow is:
 
 ## Next Step
 
-The next tiny milestone is to keep improving the repository foundation before adding application code.
-
-A good next task is to document the current repository structure so a beginner can understand what each file is for.
+The next feature PR is persistent service management: create, list, update,
+pause, resume, and delete monitored services.

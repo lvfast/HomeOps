@@ -4,19 +4,64 @@ This file explains how to operate the project.
 
 ## Start the app
 
-TBD
+Start infrastructure:
+
+```bash
+docker compose up -d postgres redis
+```
+
+Run migrations:
+
+```bash
+npm run prisma:migrate
+```
+
+Start the API:
+
+```bash
+npm start
+```
 
 ## Stop the app
 
-TBD
+Stop the API with `Ctrl+C` in the terminal where it is running.
+
+Stop infrastructure:
+
+```bash
+docker compose down
+```
 
 ## Check status
 
-TBD
+Check the API health endpoint:
+
+```text
+http://localhost:3000/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+Check Docker services:
+
+```bash
+docker compose ps
+```
 
 ## View logs
 
-TBD
+View infrastructure logs:
+
+```bash
+docker compose logs postgres
+docker compose logs redis
+```
 
 ## Common problems
 
@@ -28,6 +73,24 @@ Steps:
 2. Check environment variables.
 3. Check dependencies.
 4. Check logs.
+
+### Docker services do not start
+
+Steps:
+
+1. Check that Docker Desktop is running.
+2. Check whether ports `5432` or `6379` are already in use.
+3. Run `docker compose ps`.
+4. Run `docker compose logs postgres` or `docker compose logs redis`.
+
+### Prisma migration fails
+
+Steps:
+
+1. Check that `.env` exists.
+2. Check that `DATABASE_URL` matches `.env.example`.
+3. Check that PostgreSQL is running.
+4. Run `npm run prisma:migrate` again.
 
 ## Backup
 
