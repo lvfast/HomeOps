@@ -61,10 +61,10 @@ Redis, Prisma setup, and the first database migration for the `Service` model.
 ```bash
 npm.cmd install dotenv @prisma/client
 npm.cmd install --save-dev prisma
-npm.cmd install @prisma/adapter-pg
 npx.cmd prisma validate
 npx.cmd prisma generate
 docker compose up -d postgres redis
+npm.cmd audit --omit=dev
 ```
 
 ### Concepts learned
@@ -78,6 +78,10 @@ docker compose up -d postgres redis
 
 Docker Compose was installed, but Docker daemon was not reachable in this
 environment. The database containers could not be started here.
+
+`npm audit` originally reported vulnerabilities in the Prisma 7 development
+toolchain. We aligned Prisma packages on version 6.19.3 so audit is clean and
+Prisma validation still works.
 
 ### Questions to revisit
 
