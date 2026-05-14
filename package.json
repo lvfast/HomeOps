@@ -2,12 +2,14 @@
   "name": "homeops",
   "version": "1.0.0",
   "description": "HomeOps is a self-hosted mini SRE platform for monitoring personal services running on a homelab or VPS.",
-  "main": "src/index.js",
+  "main": "src/server.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "start": "node src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
     "test": "node --test"
   },
   "repository": {
@@ -23,9 +25,13 @@
   },
   "homepage": "https://github.com/lvfast/HomeOps#readme",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "prisma": "^7.8.0",
     "supertest": "^7.2.2"
   }
 }

@@ -45,6 +45,50 @@ TBD
 
 Start PR 1: runtime configuration and database foundation.
 
+## 2026-05-14 - Runtime and database foundation
+
+### What we worked on
+
+We started PR 1: runtime configuration and database foundation.
+
+### What changed
+
+We added a centralized config module, Docker Compose services for PostgreSQL and
+Redis, Prisma setup, and the first database migration for the `Service` model.
+
+### Commands used
+
+```bash
+npm.cmd install dotenv @prisma/client
+npm.cmd install --save-dev prisma
+npm.cmd install @prisma/adapter-pg
+npx.cmd prisma validate
+npx.cmd prisma generate
+docker compose up -d postgres redis
+```
+
+### Concepts learned
+
+- Runtime configuration means reading app settings from environment variables.
+- Docker Compose can start supporting services like PostgreSQL and Redis.
+- Prisma schema describes the database models.
+- A migration records a database structure change.
+
+### What confused me
+
+Docker Compose was installed, but Docker daemon was not reachable in this
+environment. The database containers could not be started here.
+
+### Questions to revisit
+
+- Should service CRUD use Prisma Client directly first, or introduce a small
+  service repository module?
+- Should the first scheduler use a simple worker loop before BullMQ?
+
+### Next tiny step
+
+Verify Docker and Prisma migration locally when Docker Desktop is running.
+
 ## Entry template
 
 ### Date
