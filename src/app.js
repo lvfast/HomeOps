@@ -5,6 +5,7 @@ const statusRoutes = require("./routes/statusRoutes");
 
 const app = express();
 
+app.use(express.json());
 app.use(statusRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
