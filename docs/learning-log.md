@@ -134,6 +134,55 @@ TBD
 
 Review the PR 2 diff, then commit and open a Pull Request.
 
+## 2026-05-15 - Health check runner and history
+
+### What we worked on
+
+We started PR 3: health check runner and history.
+
+### What changed
+
+We added a `HealthCheck` database model and a manual API for checking one
+service:
+
+- `POST /services/:id/check`
+- `GET /services/:id/health-checks`
+
+The health check runner sends an HTTP GET request, measures response time,
+handles timeout, compares the response status code with the expected status
+code, and saves the result.
+
+### Commands used
+
+```bash
+git switch -c feat/health-check-runner-history
+docker compose up -d postgres redis
+npm.cmd run prisma:migrate -- --name add_health_checks
+npm.cmd test
+```
+
+### Concepts learned
+
+- A health check is a request used to decide whether a service looks healthy.
+- Response time measures how long the service took to answer.
+- Timeout prevents HomeOps from waiting forever for a broken service.
+- Health check history lets future features calculate uptime and detect trends.
+
+### What confused me
+
+Prisma migration failed when PostgreSQL was not running. Starting Docker Compose
+again fixed the issue.
+
+### Questions to revisit
+
+- Should health check tests move to a separate test database?
+- Should `runHealthCheck` support more check types later, such as TCP or custom
+  headers?
+
+### Next tiny step
+
+Review the PR 3 diff, then commit and open a Pull Request.
+
 ## Entry template
 
 ### Date

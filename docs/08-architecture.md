@@ -2,7 +2,7 @@
 
 ## Current state
 
-This project is currently in the beginner setup phase.
+This project is in the backend foundation phase.
 
 Architecture should stay simple until there is a real need for more complexity.
 
@@ -15,19 +15,35 @@ Architecture should stay simple until there is a real need for more complexity.
 
 ## Current components
 
-TBD
+- Express API server
+- PostgreSQL database
+- Prisma schema and migrations
+- Docker Compose for local PostgreSQL and Redis
+- Manual health check runner
 
-Example future components:
+Future components:
 
 - Web app
-- API server
-- Database
+- Background worker
+- Queue
+- Alert notifications
 - Reverse proxy
 - Monitoring
 - Backup job
 
 ## Architecture diagram
 
-TBD
+```text
+Client or Postman
+  -> Express API
+  -> Prisma Client
+  -> PostgreSQL
 
-When the project has real components, add a simple text diagram here.
+Manual check flow:
+
+Client or Postman
+  -> POST /services/:id/check
+  -> runHealthCheck(service)
+  -> monitored service URL
+  -> save HealthCheck in PostgreSQL
+```

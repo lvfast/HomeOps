@@ -1,5 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const http = require("node:http");
 const request = require("supertest");
 
 const { createApp } = require("../src/app");
@@ -99,3 +100,115 @@ test("POST /services rejects an invalid URL", async () => {
     message: "Service URL must be a valid HTTP or HTTPS URL",
   });
 });
+
+test("POST /services/:id/check saves a successful health check", async () => {
+  const testServer = await startTestHttpServer((req, res) => {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ status: "ok" }));
+  });
+
+  try {
+    const createResponse = await request(app).post("/services").send({
+      name: "Healthy API",
+      url: `${testServer.url}/health`,
+      expectedStatusCode: 200,
+      intervalSeconds: 60,
+      timeoutSeconds: 5,
+      failureThreshold: 3,
+    });
+    const serviceId = createResponse.body.service.id;
+    createdServiceIds.push(serviceId);
+
+    const checkResponse = await request(app).post(`/services/${serviceId}/check`);
+
+    assert.equal(checkResponse.status, 201);
+    assert.equal(checkResponse.body.healthCheck.serviceId, serviceId);
+    assert.equal(checkResponse.body.healthCheck.status, "SUCCESS");
+    assert.equal(checkResponse.body.healthCheck.statusCode, 200);
+    assert.equal(checkResponse.body.healthCheck.errorMessage, null);
+    assert.equal(
+      Number.isInteger(checkResponse.body.healthCheck.responseTimeMs),
+      true,
+    );
+
+    const historyResponse = await request(app).get(
+      `/services/${serviceId}/health-checks`,
+    );
+
+    assert.equal(historyResponse.status, 200);
+    assert.equal(historyResponse.body.healthChecks.length, 1);
+    assert.equal(historyResponse.body.healthChecks[0].status, "SUCCESS");
+  } finally {
+    await testServer.close();
+  }
+});
+
+test("POST /services/:id/check saves a failed health check for unexpected status", async () => {
+  const testServer = await startTestHttpServer((req, res) => {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ status: "error" }));
+  });
+
+  try {
+    const createResponse = await request(app).post("/services").send({
+      name: "Failing API",
+      url: `${testServer.url}/health`,
+      expectedStatusCode: 200,
+      intervalSeconds: 60,
+      timeoutSeconds: 5,
+      failureThreshold: 3,
+    });
+    const serviceId = createResponse.body.service.id;
+    createdServiceIds.push(serviceId);
+
+    const checkResponse = await request(app).post(`/services/${serviceId}/check`);
+
+    assert.equal(checkResponse.status, 201);
+    assert.equal(checkResponse.body.healthCheck.serviceId, serviceId);
+    assert.equal(checkResponse.body.healthCheck.status, "FAILURE");
+    assert.equal(checkResponse.body.healthCheck.statusCode, 500);
+    assert.equal(
+      checkResponse.body.healthCheck.errorMessage,
+      "Expected status 200 but received 500",
+    );
+  } finally {
+    await testServer.close();
+  }
+});
+
+test("GET /services/:id/health-checks returns 404 for a missing service", async () => {
+  const response = await request(app).get(
+    "/services/missing-service-id/health-checks",
+  );
+
+  assert.equal(response.status, 404);
+  assert.deepEqual(response.body, {
+    error: "Not Found",
+    message: "Service not found",
+  });
+});
+
+async function startTestHttpServer(handler) {
+  const server = http.createServer(handler);
+
+  await new Promise((resolve) => {
+    server.listen(0, "127.0.0.1", resolve);
+  });
+
+  const address = server.address();
+
+  return {
+    url: `http://127.0.0.1:${address.port}`,
+    close: () =>
+      new Promise((resolve, reject) => {
+        server.close((error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve();
+        });
+      }),
+  };
+}
