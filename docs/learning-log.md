@@ -93,6 +93,47 @@ Prisma validation still works.
 
 Verify Docker and Prisma migration locally when Docker Desktop is running.
 
+## 2026-05-15 - Persistent service management
+
+### What we worked on
+
+We started PR 2: persistent service management.
+
+### What changed
+
+We added service management API endpoints for creating, listing, reading,
+updating, pausing, resuming, and deleting monitored services.
+
+The endpoints use Prisma to persist services in PostgreSQL.
+
+### Commands used
+
+```bash
+git switch -c feat/persistent-service-management
+npm.cmd test
+```
+
+### Concepts learned
+
+- CRUD means create, read, update, and delete.
+- Validation means checking input before saving it.
+- Persistent data means data is saved in a database instead of only living in
+  memory.
+
+### What confused me
+
+TBD
+
+### Questions to revisit
+
+- Should we introduce a separate service layer before health check logic grows?
+- Should future tests use a separate test database instead of the local
+  development database?
+
+### Next tiny step
+
+Review the PR 2 diff, then commit and open a Pull Request.
+
 ## Entry template
 
 ### Date

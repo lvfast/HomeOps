@@ -50,6 +50,16 @@ A tool that checks code style and common mistakes.
 
 A check that verifies code behaves as expected.
 
+## CRUD
+
+Create, Read, Update, Delete. These are the four basic operations for managing
+records such as HomeOps services.
+
+## Validation
+
+Checking input before using it. For example, HomeOps validates that a service
+URL is an HTTP or HTTPS URL before saving it.
+
 ## Docker
 
 A tool for packaging an application with its runtime environment.
