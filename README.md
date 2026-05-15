@@ -17,8 +17,8 @@ At this stage, the project focuses on:
 
 The first minimal backend API has been added. It currently exposes a health check endpoint at `/health`.
 
-Runtime configuration, Docker Compose services, and the first Prisma database
-schema are being added before the service management APIs.
+Runtime configuration, Docker Compose services, the first Prisma database
+schema, and persistent service management APIs have been added.
 
 ## Intended MVP
 
@@ -121,6 +121,33 @@ The server reads `APP_PORT` from the environment. If `APP_PORT` is not set, it u
 The database connection is read from `DATABASE_URL`. Redis is configured through
 `REDIS_URL`, but Redis is not used by application logic yet.
 
+## Service Management API
+
+The backend can now manage monitored services through these endpoints:
+
+```text
+GET /services
+POST /services
+GET /services/:id
+PATCH /services/:id
+DELETE /services/:id
+POST /services/:id/pause
+POST /services/:id/resume
+```
+
+Example request body for `POST /services`:
+
+```json
+{
+  "name": "Example API",
+  "url": "https://example.com/health",
+  "expectedStatusCode": 200,
+  "intervalSeconds": 60,
+  "timeoutSeconds": 5,
+  "failureThreshold": 3
+}
+```
+
 ## Learning Workflow
 
 HomeOps is built with small, reviewable tasks.
@@ -140,5 +167,5 @@ For each task, the workflow is:
 
 ## Next Step
 
-The next feature PR is persistent service management: create, list, update,
-pause, resume, and delete monitored services.
+The next feature PR is health check runner and history: run an HTTP check for a
+service and save the result.
