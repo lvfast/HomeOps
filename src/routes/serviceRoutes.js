@@ -1,4 +1,5 @@
 const express = require("express");
+const { runHealthCheck } = require("../healthChecks/runHealthCheck");
 
 const editableFields = [
   "name",
@@ -45,6 +46,42 @@ function createServiceRoutes(prisma) {
     }
 
     res.status(200).json({ service });
+  });
+
+  router.post("/services/:id/check", async (req, res) => {
+    const service = await findService(prisma, req.params.id);
+
+    if (!service) {
+      return sendServiceNotFound(res);
+    }
+
+    const result = await runHealthCheck(service);
+    const healthCheck = await prisma.healthCheck.create({
+      data: {
+        serviceId: service.id,
+        status: result.status,
+        statusCode: result.statusCode,
+        responseTimeMs: result.responseTimeMs,
+        errorMessage: result.errorMessage,
+      },
+    });
+
+    res.status(201).json({ healthCheck });
+  });
+
+  router.get("/services/:id/health-checks", async (req, res) => {
+    const service = await findService(prisma, req.params.id);
+
+    if (!service) {
+      return sendServiceNotFound(res);
+    }
+
+    const healthChecks = await prisma.healthCheck.findMany({
+      where: { serviceId: service.id },
+      orderBy: { checkedAt: "desc" },
+    });
+
+    res.status(200).json({ healthChecks });
   });
 
   router.patch("/services/:id", async (req, res) => {

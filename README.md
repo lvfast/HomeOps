@@ -17,8 +17,9 @@ At this stage, the project focuses on:
 
 The first minimal backend API has been added. It currently exposes a health check endpoint at `/health`.
 
-Runtime configuration, Docker Compose services, the first Prisma database
-schema, and persistent service management APIs have been added.
+Runtime configuration, Docker Compose services, Prisma database schema,
+persistent service management APIs, and manual health check history have been
+added.
 
 ## Intended MVP
 
@@ -133,6 +134,8 @@ PATCH /services/:id
 DELETE /services/:id
 POST /services/:id/pause
 POST /services/:id/resume
+POST /services/:id/check
+GET /services/:id/health-checks
 ```
 
 Example request body for `POST /services`:
@@ -147,6 +150,10 @@ Example request body for `POST /services`:
   "failureThreshold": 3
 }
 ```
+
+Call `POST /services/:id/check` to run one HTTP GET health check for a service.
+The result is saved to PostgreSQL and can be read back with
+`GET /services/:id/health-checks`.
 
 ## Learning Workflow
 
@@ -167,5 +174,5 @@ For each task, the workflow is:
 
 ## Next Step
 
-The next feature PR is health check runner and history: run an HTTP check for a
-service and save the result.
+The next feature PR is service status transition logic: use saved health check
+results to decide when a service should move between `UP` and `DOWN`.

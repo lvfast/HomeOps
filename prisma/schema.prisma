@@ -13,6 +13,11 @@ enum ServiceStatus {
   DOWN
 }
 
+enum HealthCheckStatus {
+  SUCCESS
+  FAILURE
+}
+
 model Service {
   id                  String        @id @default(cuid())
   name                String
@@ -29,6 +34,20 @@ model Service {
   lastFailureAt       DateTime?
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
+  healthChecks        HealthCheck[]
 
   @@map("services")
+}
+
+model HealthCheck {
+  id             String            @id @default(cuid())
+  serviceId      String
+  service        Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  status         HealthCheckStatus
+  statusCode     Int?
+  responseTimeMs Int
+  errorMessage   String?
+  checkedAt      DateTime          @default(now())
+
+  @@map("health_checks")
 }

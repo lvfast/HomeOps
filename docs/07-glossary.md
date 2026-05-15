@@ -60,6 +60,21 @@ records such as HomeOps services.
 Checking input before using it. For example, HomeOps validates that a service
 URL is an HTTP or HTTPS URL before saving it.
 
+## Health check
+
+A check that asks whether a service is healthy. In HomeOps, the first health
+check type sends an HTTP GET request to the service URL.
+
+## Response time
+
+How long a request takes to receive a response. HomeOps stores response time in
+milliseconds.
+
+## Timeout
+
+The maximum time HomeOps waits for a service to respond before marking that
+check as failed.
+
 ## Docker
 
 A tool for packaging an application with its runtime environment.
