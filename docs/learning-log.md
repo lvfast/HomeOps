@@ -233,6 +233,52 @@ Docker Compose services, the full test suite passed.
 
 Review and commit the PR 4 diff, then push the branch and open a Pull Request.
 
+## 2026-05-16 - Background health check scheduler
+
+### What we worked on
+
+We started PR 5: background health check scheduler.
+
+### What changed
+
+We added a simple in-process worker that starts with the API server.
+
+The worker periodically finds active services, skips services that were checked
+too recently, runs health checks for due services, saves health check history,
+and updates service status.
+
+We also extracted `checkService` so the manual API endpoint and the worker use
+the same health check persistence and status transition logic.
+
+### Commands used
+
+```bash
+git switch -c feat/background-health-check-scheduler
+npm.cmd test
+```
+
+### Concepts learned
+
+- A worker performs background work without waiting for a user request.
+- A scheduler decides when repeated background work should run.
+- Polling means checking repeatedly at a fixed interval.
+- Shared domain logic helps prevent the API path and worker path from drifting
+  apart.
+
+### What confused me
+
+TBD
+
+### Questions to revisit
+
+- Should the worker move to a separate process later?
+- When should HomeOps replace this simple loop with BullMQ and Redis?
+- Should automatic health checks have more detailed operational metrics?
+
+### Next tiny step
+
+Review and commit the PR 5 diff, then push the branch and open a Pull Request.
+
 ## Entry template
 
 ### Date

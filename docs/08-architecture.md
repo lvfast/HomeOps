@@ -21,11 +21,11 @@ Architecture should stay simple until there is a real need for more complexity.
 - Docker Compose for local PostgreSQL and Redis
 - Manual health check runner
 - Service status transition logic
+- Background health check scheduler
 
 Future components:
 
 - Web app
-- Background worker
 - Queue
 - Alert notifications
 - Reverse proxy
@@ -46,6 +46,17 @@ Client or Postman
   -> POST /services/:id/check
   -> runHealthCheck(service)
   -> monitored service URL
+  -> save HealthCheck in PostgreSQL
+  -> update Service status fields
+
+Background check flow:
+
+API process starts
+  -> start health check worker
+  -> every WORKER_POLL_INTERVAL_SECONDS
+  -> find active services
+  -> skip services checked too recently
+  -> check due services
   -> save HealthCheck in PostgreSQL
   -> update Service status fields
 ```

@@ -19,6 +19,7 @@ Local development uses:
 - Node.js and npm for the backend API
 - Docker Compose for PostgreSQL and Redis
 - Prisma for database schema and migrations
+- A simple in-process background worker for automatic health checks
 
 The usual setup flow is:
 
@@ -65,6 +66,8 @@ Current variables:
 - `APP_PORT`: HTTP port for the API
 - `DATABASE_URL`: PostgreSQL connection URL used by Prisma
 - `REDIS_URL`: Redis connection URL for future background jobs
+- `WORKER_POLL_INTERVAL_SECONDS`: how often the worker looks for services that
+  are due for a health check
 
 ## Rebuild from scratch
 

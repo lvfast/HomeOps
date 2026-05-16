@@ -85,6 +85,22 @@ health check.
 The number of consecutive failed checks required before HomeOps marks a service
 as `DOWN`.
 
+## Worker
+
+A part of the application that does background work without waiting for a user
+to call an API endpoint. In HomeOps, the first worker automatically checks
+active services.
+
+## Scheduler
+
+Logic that runs work on a repeated schedule. In HomeOps, the scheduler wakes up
+every few seconds and looks for services that are due for a health check.
+
+## Polling
+
+Checking something repeatedly at an interval. HomeOps uses polling to look for
+services that need a new health check.
+
 ## Response time
 
 How long a request takes to receive a response. HomeOps stores response time in
