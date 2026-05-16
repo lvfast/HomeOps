@@ -22,6 +22,13 @@ Start the API:
 npm start
 ```
 
+Starting the API also starts the background health check worker. The terminal
+should show a message like:
+
+```text
+Health check worker is polling every 5 seconds
+```
+
 ## Stop the app
 
 Stop the API with `Ctrl+C` in the terminal where it is running.
@@ -53,6 +60,14 @@ Check Docker services:
 ```bash
 docker compose ps
 ```
+
+Check whether automatic health checks are being created:
+
+1. Create or resume an active service.
+2. Wait for at least the service `intervalSeconds`.
+3. Call `GET /services/:id/health-checks`.
+4. Confirm that new health check records appear without calling
+   `POST /services/:id/check`.
 
 ## View logs
 
@@ -91,6 +106,16 @@ Steps:
 2. Check that `DATABASE_URL` matches `.env.example`.
 3. Check that PostgreSQL is running.
 4. Run `npm run prisma:migrate` again.
+
+### Worker does not create health checks
+
+Steps:
+
+1. Check that the API is running with `npm start`.
+2. Check that the service has `isActive: true`.
+3. Check that enough time has passed since `lastCheckedAt`.
+4. Check `WORKER_POLL_INTERVAL_SECONDS` in `.env`.
+5. Check the API terminal for worker error logs.
 
 ## Backup
 

@@ -21,7 +21,8 @@ Runtime configuration, Docker Compose services, Prisma database schema,
 persistent service management APIs, and manual health check history have been
 added. Manual health checks now also update service status fields such as
 `currentStatus`, `consecutiveFailures`, `lastCheckedAt`, `lastSuccessAt`, and
-`lastFailureAt`.
+`lastFailureAt`. The API process also starts a simple background worker that
+automatically checks active services when they are due.
 
 ## Intended MVP
 
@@ -124,6 +125,10 @@ The server reads `APP_PORT` from the environment. If `APP_PORT` is not set, it u
 The database connection is read from `DATABASE_URL`. Redis is configured through
 `REDIS_URL`, but Redis is not used by application logic yet.
 
+The background worker reads `WORKER_POLL_INTERVAL_SECONDS` to decide how often
+it looks for active services that are due for a health check. The default is
+`5` seconds.
+
 ## Service Management API
 
 The backend can now manage monitored services through these endpoints:
@@ -165,6 +170,22 @@ The manual check endpoint also updates the related service:
 - failed checks mark the service `DOWN` after reaching `failureThreshold`
 - a successful check recovers a `DOWN` service back to `UP`
 
+## Background Worker
+
+When the API starts with `npm start`, HomeOps also starts a simple background
+worker in the same Node.js process.
+
+The worker periodically:
+
+1. Finds services where `isActive` is `true`.
+2. Skips services that were checked too recently.
+3. Runs a health check for services whose `intervalSeconds` has passed.
+4. Saves each health check result.
+5. Updates the service status using the same logic as the manual check endpoint.
+
+This is intentionally simpler than BullMQ. Redis is still available in Docker
+Compose for future queue-based background jobs.
+
 ## Learning Workflow
 
 HomeOps is built with small, reviewable tasks.
@@ -184,5 +205,5 @@ For each task, the workflow is:
 
 ## Next Step
 
-The next feature PR is the background health check scheduler: make HomeOps check
-active services automatically instead of only through manual API calls.
+The next feature PR is incident lifecycle and timeline: create incidents when
+services go down and resolve them when services recover.

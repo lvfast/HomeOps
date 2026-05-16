@@ -8,6 +8,7 @@ const statusRoutes = require("./routes/statusRoutes");
 function createApp({ prisma = createPrismaClient() } = {}) {
   const app = express();
 
+  app.locals.prisma = prisma;
   app.use(express.json());
   app.use(statusRoutes);
   app.use(createServiceRoutes(prisma));
