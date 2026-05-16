@@ -65,6 +65,26 @@ URL is an HTTP or HTTPS URL before saving it.
 A check that asks whether a service is healthy. In HomeOps, the first health
 check type sends an HTTP GET request to the service URL.
 
+## Service status
+
+The current health state of a monitored service. HomeOps currently uses
+`UNKNOWN`, `UP`, and `DOWN`.
+
+## State transition
+
+A change from one state to another. For example, a service can transition from
+`UP` to `DOWN` after enough failed health checks.
+
+## Consecutive failures
+
+Failed checks in a row. HomeOps resets this number to `0` after a successful
+health check.
+
+## Failure threshold
+
+The number of consecutive failed checks required before HomeOps marks a service
+as `DOWN`.
+
 ## Response time
 
 How long a request takes to receive a response. HomeOps stores response time in

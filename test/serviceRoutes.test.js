@@ -126,6 +126,12 @@ test("POST /services/:id/check saves a successful health check", async () => {
     assert.equal(checkResponse.body.healthCheck.status, "SUCCESS");
     assert.equal(checkResponse.body.healthCheck.statusCode, 200);
     assert.equal(checkResponse.body.healthCheck.errorMessage, null);
+    assert.equal(checkResponse.body.service.id, serviceId);
+    assert.equal(checkResponse.body.service.currentStatus, "UP");
+    assert.equal(checkResponse.body.service.consecutiveFailures, 0);
+    assert.equal(typeof checkResponse.body.service.lastCheckedAt, "string");
+    assert.equal(typeof checkResponse.body.service.lastSuccessAt, "string");
+    assert.equal(checkResponse.body.service.lastFailureAt, null);
     assert.equal(
       Number.isInteger(checkResponse.body.healthCheck.responseTimeMs),
       true,
@@ -156,7 +162,7 @@ test("POST /services/:id/check saves a failed health check for unexpected status
       expectedStatusCode: 200,
       intervalSeconds: 60,
       timeoutSeconds: 5,
-      failureThreshold: 3,
+      failureThreshold: 1,
     });
     const serviceId = createResponse.body.service.id;
     createdServiceIds.push(serviceId);
@@ -170,6 +176,58 @@ test("POST /services/:id/check saves a failed health check for unexpected status
     assert.equal(
       checkResponse.body.healthCheck.errorMessage,
       "Expected status 200 but received 500",
+    );
+    assert.equal(checkResponse.body.service.id, serviceId);
+    assert.equal(checkResponse.body.service.currentStatus, "DOWN");
+    assert.equal(checkResponse.body.service.consecutiveFailures, 1);
+    assert.equal(typeof checkResponse.body.service.lastCheckedAt, "string");
+    assert.equal(checkResponse.body.service.lastSuccessAt, null);
+    assert.equal(typeof checkResponse.body.service.lastFailureAt, "string");
+  } finally {
+    await testServer.close();
+  }
+});
+
+test("POST /services/:id/check recovers a DOWN service after a successful health check", async () => {
+  let responseStatusCode = 500;
+  const testServer = await startTestHttpServer((req, res) => {
+    res.writeHead(responseStatusCode, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ status: responseStatusCode }));
+  });
+
+  try {
+    const createResponse = await request(app).post("/services").send({
+      name: "Recovering API",
+      url: `${testServer.url}/health`,
+      expectedStatusCode: 200,
+      intervalSeconds: 60,
+      timeoutSeconds: 5,
+      failureThreshold: 1,
+    });
+    const serviceId = createResponse.body.service.id;
+    createdServiceIds.push(serviceId);
+
+    const failedCheckResponse = await request(app).post(
+      `/services/${serviceId}/check`,
+    );
+
+    assert.equal(failedCheckResponse.status, 201);
+    assert.equal(failedCheckResponse.body.service.currentStatus, "DOWN");
+    assert.equal(failedCheckResponse.body.service.consecutiveFailures, 1);
+
+    responseStatusCode = 200;
+
+    const recoveryCheckResponse = await request(app).post(
+      `/services/${serviceId}/check`,
+    );
+
+    assert.equal(recoveryCheckResponse.status, 201);
+    assert.equal(recoveryCheckResponse.body.healthCheck.status, "SUCCESS");
+    assert.equal(recoveryCheckResponse.body.service.currentStatus, "UP");
+    assert.equal(recoveryCheckResponse.body.service.consecutiveFailures, 0);
+    assert.equal(
+      typeof recoveryCheckResponse.body.service.lastSuccessAt,
+      "string",
     );
   } finally {
     await testServer.close();

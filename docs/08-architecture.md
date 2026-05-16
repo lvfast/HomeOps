@@ -20,6 +20,7 @@ Architecture should stay simple until there is a real need for more complexity.
 - Prisma schema and migrations
 - Docker Compose for local PostgreSQL and Redis
 - Manual health check runner
+- Service status transition logic
 
 Future components:
 
@@ -46,4 +47,5 @@ Client or Postman
   -> runHealthCheck(service)
   -> monitored service URL
   -> save HealthCheck in PostgreSQL
+  -> update Service status fields
 ```
