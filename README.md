@@ -19,7 +19,9 @@ The first minimal backend API has been added. It currently exposes a health chec
 
 Runtime configuration, Docker Compose services, Prisma database schema,
 persistent service management APIs, and manual health check history have been
-added.
+added. Manual health checks now also update service status fields such as
+`currentStatus`, `consecutiveFailures`, `lastCheckedAt`, `lastSuccessAt`, and
+`lastFailureAt`.
 
 ## Intended MVP
 
@@ -155,6 +157,14 @@ Call `POST /services/:id/check` to run one HTTP GET health check for a service.
 The result is saved to PostgreSQL and can be read back with
 `GET /services/:id/health-checks`.
 
+The manual check endpoint also updates the related service:
+
+- successful checks mark the service `UP`
+- successful checks reset `consecutiveFailures` to `0`
+- failed checks increase `consecutiveFailures`
+- failed checks mark the service `DOWN` after reaching `failureThreshold`
+- a successful check recovers a `DOWN` service back to `UP`
+
 ## Learning Workflow
 
 HomeOps is built with small, reviewable tasks.
@@ -174,5 +184,5 @@ For each task, the workflow is:
 
 ## Next Step
 
-The next feature PR is service status transition logic: use saved health check
-results to decide when a service should move between `UP` and `DOWN`.
+The next feature PR is the background health check scheduler: make HomeOps check
+active services automatically instead of only through manual API calls.

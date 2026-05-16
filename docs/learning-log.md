@@ -183,6 +183,56 @@ again fixed the issue.
 
 Review the PR 3 diff, then commit and open a Pull Request.
 
+## 2026-05-16 - Service status transition logic
+
+### What we worked on
+
+We started PR 4: service status transition logic.
+
+### What changed
+
+We added logic that updates a service after each manual health check.
+
+Successful checks mark the service `UP`, reset `consecutiveFailures`, and update
+`lastCheckedAt` and `lastSuccessAt`.
+
+Failed checks increase `consecutiveFailures`, update `lastCheckedAt` and
+`lastFailureAt`, and mark the service `DOWN` once the failure count reaches
+`failureThreshold`.
+
+### Commands used
+
+```bash
+git switch -c feat/service-status-transition-logic
+docker compose ps
+docker compose up -d postgres redis
+npm.cmd test
+```
+
+### Concepts learned
+
+- A state transition is a controlled change from one state to another.
+- A failure threshold helps avoid marking a service down after one temporary
+  failure.
+- A pure helper function is easier to test because it does not need HTTP,
+  Express, Prisma, or PostgreSQL.
+
+### What confused me
+
+Route tests need PostgreSQL. When Docker Desktop was not running, those tests
+failed with database connection errors. After starting Docker Desktop and the
+Docker Compose services, the full test suite passed.
+
+### Questions to revisit
+
+- Should route tests eventually use a dedicated test database?
+- Should PR 5 reuse the same status transition helper from the background
+  scheduler?
+
+### Next tiny step
+
+Review and commit the PR 4 diff, then push the branch and open a Pull Request.
+
 ## Entry template
 
 ### Date
