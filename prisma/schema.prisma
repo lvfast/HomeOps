@@ -18,6 +18,24 @@ enum HealthCheckStatus {
   FAILURE
 }
 
+enum IncidentStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+enum IncidentSeverity {
+  SEV1
+  SEV2
+  SEV3
+}
+
+enum IncidentEventType {
+  CREATED
+  ACKNOWLEDGED
+  RESOLVED
+}
+
 model Service {
   id                  String        @id @default(cuid())
   name                String
@@ -35,6 +53,7 @@ model Service {
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   healthChecks        HealthCheck[]
+  incidents           Incident[]
 
   @@map("services")
 }
@@ -50,4 +69,33 @@ model HealthCheck {
   checkedAt      DateTime          @default(now())
 
   @@map("health_checks")
+}
+
+model Incident {
+  id              String            @id @default(cuid())
+  serviceId       String
+  service         Service           @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  title           String
+  severity        IncidentSeverity  @default(SEV2)
+  status          IncidentStatus    @default(OPEN)
+  startedAt       DateTime
+  resolvedAt      DateTime?
+  durationSeconds Int?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  events          IncidentEvent[]
+
+  @@map("incidents")
+}
+
+model IncidentEvent {
+  id         String            @id @default(cuid())
+  incidentId String
+  incident   Incident          @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  type       IncidentEventType
+  message    String
+  metadata   Json?
+  createdAt  DateTime          @default(now())
+
+  @@map("incident_events")
 }

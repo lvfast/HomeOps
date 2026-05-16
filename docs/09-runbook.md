@@ -69,6 +69,15 @@ Check whether automatic health checks are being created:
 4. Confirm that new health check records appear without calling
    `POST /services/:id/check`.
 
+Check whether incidents are being created:
+
+1. Create an active service with a URL that returns a failing status code.
+2. Wait for enough failed checks to reach `failureThreshold`.
+3. Call `GET /incidents`.
+4. Confirm that an `OPEN` incident exists for the service.
+5. Fix the service URL or make the service healthy again.
+6. Confirm that the incident becomes `RESOLVED`.
+
 ## View logs
 
 View infrastructure logs:

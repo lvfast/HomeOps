@@ -22,6 +22,7 @@ Architecture should stay simple until there is a real need for more complexity.
 - Manual health check runner
 - Service status transition logic
 - Background health check scheduler
+- Incident lifecycle and timeline
 
 Future components:
 
@@ -59,4 +60,17 @@ API process starts
   -> check due services
   -> save HealthCheck in PostgreSQL
   -> update Service status fields
+
+Incident lifecycle flow:
+
+Health check updates Service status
+  -> if Service transitions to DOWN
+  -> create OPEN Incident
+  -> create CREATED IncidentEvent
+
+Health check updates Service status
+  -> if Service transitions from DOWN to UP
+  -> resolve active Incident
+  -> calculate durationSeconds
+  -> create RESOLVED IncidentEvent
 ```

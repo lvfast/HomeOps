@@ -279,6 +279,59 @@ TBD
 
 Review and commit the PR 5 diff, then push the branch and open a Pull Request.
 
+## 2026-05-16 - Incident lifecycle and timeline
+
+### What we worked on
+
+We started PR 6: incident lifecycle and timeline.
+
+### What changed
+
+We added `Incident` and `IncidentEvent` database models.
+
+HomeOps now opens an incident when a service transitions to `DOWN`, avoids
+duplicate active incidents for the same outage, and resolves the active incident
+when the service recovers to `UP`.
+
+We also added incident APIs for listing, reading, acknowledging, resolving, and
+reading timeline events.
+
+### Commands used
+
+```bash
+git switch -c feat/incident-lifecycle-timeline
+npm.cmd run prisma:migrate -- --name add_incidents
+npx.cmd prisma validate
+npm.cmd run prisma:generate
+node --test test\incidentLifecycle.test.js test\checkService.test.js test\config.test.js test\healthCheckScheduler.test.js
+npm.cmd test
+```
+
+### Concepts learned
+
+- An incident records an outage.
+- An incident lifecycle describes how an incident moves from `OPEN` to
+  `ACKNOWLEDGED` to `RESOLVED`.
+- A timeline stores important events that happened during an incident.
+- Database migrations are needed when adding new tables.
+
+### What confused me
+
+Prisma schema validation worked, but migration creation could not run until
+Docker Desktop was started. After Docker was running, the incident migration
+applied successfully and the full test suite passed.
+
+### Questions to revisit
+
+- Should incidents remain after deleting a service, or should they cascade with
+  the service?
+- Should manual incident resolution also update service status in a later PR?
+- Should incident severity be configurable per service?
+
+### Next tiny step
+
+Review and commit the PR 6 diff, then push the branch and open a Pull Request.
+
 ## Entry template
 
 ### Date

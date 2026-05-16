@@ -101,6 +101,31 @@ every few seconds and looks for services that are due for a health check.
 Checking something repeatedly at an interval. HomeOps uses polling to look for
 services that need a new health check.
 
+## Incident
+
+A recorded outage or problem. In HomeOps, an incident is created when a service
+becomes `DOWN`.
+
+## Incident lifecycle
+
+The path an incident follows from open to resolved. HomeOps currently supports
+`OPEN`, `ACKNOWLEDGED`, and `RESOLVED`.
+
+## Incident timeline
+
+The event history of an incident. For example, HomeOps records when an incident
+was created, acknowledged, and resolved.
+
+## Acknowledge
+
+Marking that someone has seen the incident and knows it needs attention. This
+does not mean the service has recovered.
+
+## Resolve
+
+Marking that the incident is finished. In HomeOps, recovery from `DOWN` to `UP`
+automatically resolves the active incident for that outage.
+
 ## Response time
 
 How long a request takes to receive a response. HomeOps stores response time in

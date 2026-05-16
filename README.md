@@ -22,7 +22,8 @@ persistent service management APIs, and manual health check history have been
 added. Manual health checks now also update service status fields such as
 `currentStatus`, `consecutiveFailures`, `lastCheckedAt`, `lastSuccessAt`, and
 `lastFailureAt`. The API process also starts a simple background worker that
-automatically checks active services when they are due.
+automatically checks active services when they are due. Services now create
+incidents when they go down and resolve incidents when they recover.
 
 ## Intended MVP
 
@@ -186,6 +187,34 @@ The worker periodically:
 This is intentionally simpler than BullMQ. Redis is still available in Docker
 Compose for future queue-based background jobs.
 
+## Incident Management API
+
+HomeOps creates incidents automatically when a service transitions to `DOWN`.
+When a `DOWN` service recovers to `UP`, HomeOps resolves the active incident and
+records the downtime duration.
+
+The backend exposes these incident endpoints:
+
+```text
+GET /incidents
+GET /incidents/:id
+POST /incidents/:id/acknowledge
+POST /incidents/:id/resolve
+GET /incidents/:id/events
+```
+
+Incident statuses:
+
+- `OPEN`
+- `ACKNOWLEDGED`
+- `RESOLVED`
+
+Incident timeline events:
+
+- `CREATED`
+- `ACKNOWLEDGED`
+- `RESOLVED`
+
 ## Learning Workflow
 
 HomeOps is built with small, reviewable tasks.
@@ -205,5 +234,5 @@ For each task, the workflow is:
 
 ## Next Step
 
-The next feature PR is incident lifecycle and timeline: create incidents when
-services go down and resolve them when services recover.
+The next feature PR is alert notifications: send a Discord or Telegram alert
+when an incident opens or resolves.
