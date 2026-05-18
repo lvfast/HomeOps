@@ -126,6 +126,21 @@ does not mean the service has recovered.
 Marking that the incident is finished. In HomeOps, recovery from `DOWN` to `UP`
 automatically resolves the active incident for that outage.
 
+## Notification
+
+A record of an alert attempt. HomeOps stores notification records so it can see
+whether an incident alert was sent, failed, or skipped.
+
+## Webhook
+
+A URL that accepts an HTTP request from another system. HomeOps uses a Discord
+Webhook URL to send incident alerts into a Discord channel.
+
+## Alert
+
+A message sent to tell someone that something important happened. In HomeOps,
+alerts are sent when incidents open or resolve.
+
 ## Response time
 
 How long a request takes to receive a response. HomeOps stores response time in

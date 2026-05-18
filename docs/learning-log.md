@@ -332,6 +332,57 @@ applied successfully and the full test suite passed.
 
 Review and commit the PR 6 diff, then push the branch and open a Pull Request.
 
+## 2026-05-18 - Incident alert notifications
+
+### What we worked on
+
+We started PR 7: incident alert notifications.
+
+### What changed
+
+We added notification history for incident alerts and Discord Webhook support.
+
+HomeOps now records a notification attempt when an incident opens or resolves.
+If `DISCORD_WEBHOOK_URL` is configured, HomeOps sends a Discord Webhook request.
+If it is empty, HomeOps records the notification as `SKIPPED` so local
+development can still be tested without a real Discord secret.
+
+### Commands used
+
+```bash
+git switch -c feat/incident-alert-notifications
+node --test test\notifications.test.js test\incidentLifecycle.test.js test\checkService.test.js
+npx.cmd prisma validate
+npm.cmd run prisma:generate
+npm.cmd run prisma:migrate
+docker compose up -d postgres redis
+npm.cmd test
+```
+
+### Concepts learned
+
+- A webhook is a URL that receives an HTTP request from another system.
+- A notification record helps track whether an alert was sent, failed, or
+  skipped.
+- Alert deduplication prevents sending the same alert repeatedly for one
+  incident event.
+
+### What confused me
+
+Docker Desktop was not reachable when we first tried to apply the notification
+migration. After starting Docker Desktop and running Docker Compose, the
+notification migration applied successfully and the full test suite passed.
+
+### Questions to revisit
+
+- Should HomeOps retry failed notifications automatically?
+- Should alert messages include service URL, severity, and duration?
+- Should users configure alert channels per service?
+
+### Next tiny step
+
+Review and commit the PR 7 diff, then push the branch and open a Pull Request.
+
 ## Entry template
 
 ### Date

@@ -1,5 +1,6 @@
 const { runHealthCheck } = require("../healthChecks/runHealthCheck");
 const { applyIncidentLifecycle } = require("./incidentLifecycle");
+const { sendIncidentNotification } = require("./notifications");
 const { buildServiceStatusUpdate } = require("./serviceStatus");
 
 async function checkService(
@@ -8,11 +9,12 @@ async function checkService(
   {
     runHealthCheckFn = runHealthCheck,
     incidentLifecycleFn = applyIncidentLifecycle,
+    notificationFn = sendIncidentNotification,
   } = {},
 ) {
   const result = await runHealthCheckFn(service);
 
-  return runTransaction(prisma, async (tx) => {
+  const checkResult = await runTransaction(prisma, async (tx) => {
     const healthCheck = await tx.healthCheck.create({
       data: {
         serviceId: service.id,
@@ -27,7 +29,7 @@ async function checkService(
       data: buildServiceStatusUpdate(service, result, healthCheck.checkedAt),
     });
 
-    await incidentLifecycleFn(tx, {
+    const incidentLifecycleResult = await incidentLifecycleFn(tx, {
       service,
       updatedService,
       checkedAt: healthCheck.checkedAt,
@@ -35,9 +37,19 @@ async function checkService(
 
     return {
       healthCheck,
+      incidentLifecycleResult,
       service: updatedService,
     };
   });
+
+  if (checkResult.incidentLifecycleResult) {
+    await notificationFn(prisma, checkResult.incidentLifecycleResult);
+  }
+
+  return {
+    healthCheck: checkResult.healthCheck,
+    service: checkResult.service,
+  };
 }
 
 async function runTransaction(prisma, callback) {

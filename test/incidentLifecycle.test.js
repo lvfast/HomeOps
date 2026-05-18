@@ -44,7 +44,7 @@ test("applyIncidentLifecycle opens an incident when a service becomes DOWN", asy
   };
   const checkedAt = new Date("2026-05-16T12:00:00.000Z");
 
-  const incident = await applyIncidentLifecycle(prisma, {
+  const result = await applyIncidentLifecycle(prisma, {
     service: {
       id: "service-1",
       name: "Example API",
@@ -57,7 +57,8 @@ test("applyIncidentLifecycle opens an incident when a service becomes DOWN", asy
     checkedAt,
   });
 
-  assert.equal(incident.id, "incident-1");
+  assert.equal(result.action, "OPENED");
+  assert.equal(result.incident.id, "incident-1");
   assert.deepEqual(createdIncidents, [
     {
       data: {
@@ -100,7 +101,7 @@ test("applyIncidentLifecycle does not open a duplicate active incident", async (
     },
   };
 
-  const incident = await applyIncidentLifecycle(prisma, {
+  const result = await applyIncidentLifecycle(prisma, {
     service: {
       id: "service-1",
       name: "Example API",
@@ -113,7 +114,8 @@ test("applyIncidentLifecycle does not open a duplicate active incident", async (
     checkedAt: new Date("2026-05-16T12:00:00.000Z"),
   });
 
-  assert.equal(incident, existingIncident);
+  assert.equal(result.action, "OPENED");
+  assert.equal(result.incident, existingIncident);
 });
 
 test("applyIncidentLifecycle resolves an active incident when a service recovers", async () => {
@@ -148,7 +150,7 @@ test("applyIncidentLifecycle resolves an active incident when a service recovers
     },
   };
 
-  const resolvedIncident = await applyIncidentLifecycle(prisma, {
+  const result = await applyIncidentLifecycle(prisma, {
     service: {
       id: "service-1",
       currentStatus: "DOWN",
@@ -160,7 +162,8 @@ test("applyIncidentLifecycle resolves an active incident when a service recovers
     checkedAt: resolvedAt,
   });
 
-  assert.equal(resolvedIncident.status, "RESOLVED");
+  assert.equal(result.action, "RESOLVED");
+  assert.equal(result.incident.status, "RESOLVED");
   assert.deepEqual(updatedIncidents, [
     {
       where: { id: "incident-1" },

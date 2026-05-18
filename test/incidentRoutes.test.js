@@ -90,6 +90,20 @@ test("incident lifecycle opens, acknowledges, and resolves an incident", async (
       true,
     );
 
+    const notifications = await prisma.notification.findMany({
+      where: { incidentId: incident.id },
+      orderBy: { createdAt: "asc" },
+    });
+
+    assert.deepEqual(
+      notifications.map((notification) => notification.eventType),
+      ["CREATED", "RESOLVED"],
+    );
+    assert.deepEqual(
+      notifications.map((notification) => notification.status),
+      ["SKIPPED", "SKIPPED"],
+    );
+
     const resolvedEventsResponse = await request(app).get(
       `/incidents/${incident.id}/events`,
     );
@@ -128,6 +142,13 @@ test("incident lifecycle avoids duplicate active incidents for repeated failures
     });
 
     assert.equal(activeIncidents.length, 1);
+
+    const notifications = await prisma.notification.findMany({
+      where: { incidentId: activeIncidents[0].id },
+    });
+
+    assert.equal(notifications.length, 1);
+    assert.equal(notifications[0].eventType, "CREATED");
   } finally {
     await testServer.close();
   }
@@ -179,6 +200,16 @@ test("incident lifecycle resolves an active incident when a service recovers", a
 
     assert.deepEqual(
       events.map((event) => event.type),
+      ["CREATED", "RESOLVED"],
+    );
+
+    const notifications = await prisma.notification.findMany({
+      where: { incidentId: incident.id },
+      orderBy: { createdAt: "asc" },
+    });
+
+    assert.deepEqual(
+      notifications.map((notification) => notification.eventType),
       ["CREATED", "RESOLVED"],
     );
   } finally {

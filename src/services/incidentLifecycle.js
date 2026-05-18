@@ -19,11 +19,19 @@ async function applyIncidentLifecycle(
     service.currentStatus !== "DOWN" &&
     updatedService.currentStatus === "DOWN"
   ) {
-    return openIncidentIfNeeded(prisma, service, checkedAt);
+    const incident = await openIncidentIfNeeded(prisma, service, checkedAt);
+
+    return incident ? { action: "OPENED", incident } : null;
   }
 
   if (service.currentStatus === "DOWN" && updatedService.currentStatus === "UP") {
-    return resolveActiveIncidentIfNeeded(prisma, service.id, checkedAt);
+    const incident = await resolveActiveIncidentIfNeeded(
+      prisma,
+      service.id,
+      checkedAt,
+    );
+
+    return incident ? { action: "RESOLVED", incident } : null;
   }
 
   return null;
