@@ -25,6 +25,7 @@ const config = {
   nodeEnv: process.env.NODE_ENV || "development",
   databaseUrl: process.env.DATABASE_URL,
   redisUrl: process.env.REDIS_URL,
+  discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL || "",
   workerPollIntervalSeconds: parsePositiveInteger(
     process.env.WORKER_POLL_INTERVAL_SECONDS,
     5,

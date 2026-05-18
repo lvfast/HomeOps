@@ -68,6 +68,8 @@ Current variables:
 - `REDIS_URL`: Redis connection URL for future background jobs
 - `WORKER_POLL_INTERVAL_SECONDS`: how often the worker looks for services that
   are due for a health check
+- `DISCORD_WEBHOOK_URL`: optional Discord Webhook URL used for incident alert
+  notifications
 
 ## Rebuild from scratch
 

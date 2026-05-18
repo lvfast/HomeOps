@@ -36,6 +36,16 @@ enum IncidentEventType {
   RESOLVED
 }
 
+enum NotificationChannel {
+  DISCORD
+}
+
+enum NotificationStatus {
+  SENT
+  FAILED
+  SKIPPED
+}
+
 model Service {
   id                  String        @id @default(cuid())
   name                String
@@ -84,6 +94,7 @@ model Incident {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   events          IncidentEvent[]
+  notifications   Notification[]
 
   @@map("incidents")
 }
@@ -98,4 +109,20 @@ model IncidentEvent {
   createdAt  DateTime          @default(now())
 
   @@map("incident_events")
+}
+
+model Notification {
+  id           String              @id @default(cuid())
+  incidentId   String
+  incident     Incident            @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  channel      NotificationChannel
+  eventType    IncidentEventType
+  status       NotificationStatus
+  errorMessage String?
+  sentAt       DateTime?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@unique([incidentId, eventType, channel])
+  @@map("notifications")
 }

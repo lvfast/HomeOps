@@ -3,6 +3,7 @@ const {
   acknowledgeIncident,
   resolveIncident,
 } = require("../services/incidentLifecycle");
+const { sendIncidentNotification } = require("../services/notifications");
 
 function createIncidentRoutes(prisma) {
   const router = express.Router();
@@ -40,6 +41,11 @@ function createIncidentRoutes(prisma) {
         message: result.message,
       });
     }
+
+    await sendIncidentNotification(prisma, {
+      action: "RESOLVED",
+      incident: result.incident,
+    });
 
     res.status(200).json({ incident: result.incident });
   });

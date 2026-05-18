@@ -78,6 +78,15 @@ Check whether incidents are being created:
 5. Fix the service URL or make the service healthy again.
 6. Confirm that the incident becomes `RESOLVED`.
 
+Check whether Discord notifications are being recorded:
+
+1. Set `DISCORD_WEBHOOK_URL` in `.env` if you want real Discord alerts.
+2. Leave `DISCORD_WEBHOOK_URL` empty if you only want local testing.
+3. Create an incident by making a service fail.
+4. Confirm a notification record exists in PostgreSQL.
+5. If no webhook URL is configured, the notification status should be
+   `SKIPPED`.
+
 ## View logs
 
 View infrastructure logs:
@@ -125,6 +134,16 @@ Steps:
 3. Check that enough time has passed since `lastCheckedAt`.
 4. Check `WORKER_POLL_INTERVAL_SECONDS` in `.env`.
 5. Check the API terminal for worker error logs.
+
+### Discord alert is not sent
+
+Steps:
+
+1. Check that `DISCORD_WEBHOOK_URL` is set in `.env`.
+2. Restart the API after changing `.env`.
+3. Check whether a notification record was created.
+4. If the notification status is `FAILED`, check `errorMessage`.
+5. Check the Discord webhook configuration.
 
 ## Backup
 

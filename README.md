@@ -23,7 +23,8 @@ added. Manual health checks now also update service status fields such as
 `currentStatus`, `consecutiveFailures`, `lastCheckedAt`, `lastSuccessAt`, and
 `lastFailureAt`. The API process also starts a simple background worker that
 automatically checks active services when they are due. Services now create
-incidents when they go down and resolve incidents when they recover.
+incidents when they go down, resolve incidents when they recover, and record
+Discord notification attempts for incident open and recovery events.
 
 ## Intended MVP
 
@@ -130,6 +131,10 @@ The background worker reads `WORKER_POLL_INTERVAL_SECONDS` to decide how often
 it looks for active services that are due for a health check. The default is
 `5` seconds.
 
+Discord alerting reads `DISCORD_WEBHOOK_URL`. If this value is empty, HomeOps
+does not send a Discord request and records the notification attempt as
+`SKIPPED`.
+
 ## Service Management API
 
 The backend can now manage monitored services through these endpoints:
@@ -215,6 +220,22 @@ Incident timeline events:
 - `ACKNOWLEDGED`
 - `RESOLVED`
 
+## Alert Notifications
+
+HomeOps can send Discord Webhook alerts for incident lifecycle changes:
+
+- incident opened
+- incident resolved
+
+Notification attempts are stored in PostgreSQL. This lets HomeOps avoid sending
+the same Discord alert more than once for the same incident event.
+
+Notification statuses:
+
+- `SENT`
+- `FAILED`
+- `SKIPPED`
+
 ## Learning Workflow
 
 HomeOps is built with small, reviewable tasks.
@@ -234,5 +255,5 @@ For each task, the workflow is:
 
 ## Next Step
 
-The next feature PR is alert notifications: send a Discord or Telegram alert
-when an incident opens or resolves.
+The next feature PR is metrics and public status APIs: expose uptime, response
+time, dashboard summary, and public service status data.

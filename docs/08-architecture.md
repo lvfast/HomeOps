@@ -23,12 +23,12 @@ Architecture should stay simple until there is a real need for more complexity.
 - Service status transition logic
 - Background health check scheduler
 - Incident lifecycle and timeline
+- Discord incident alert notifications
 
 Future components:
 
 - Web app
 - Queue
-- Alert notifications
 - Reverse proxy
 - Monitoring
 - Backup job
@@ -73,4 +73,14 @@ Health check updates Service status
   -> resolve active Incident
   -> calculate durationSeconds
   -> create RESOLVED IncidentEvent
+
+Notification flow:
+
+Incident lifecycle opens or resolves an Incident
+  -> create or update Notification record
+  -> if DISCORD_WEBHOOK_URL is configured
+  -> send Discord Webhook request
+  -> mark Notification as SENT or FAILED
+  -> if DISCORD_WEBHOOK_URL is empty
+  -> mark Notification as SKIPPED
 ```
