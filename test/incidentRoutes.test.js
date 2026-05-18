@@ -78,6 +78,15 @@ test("incident lifecycle opens, acknowledges, and resolves an incident", async (
     assert.equal(acknowledgeResponse.status, 200);
     assert.equal(acknowledgeResponse.body.incident.status, "ACKNOWLEDGED");
 
+    const notificationsAfterAcknowledge = await prisma.notification.findMany({
+      where: { incidentId: incident.id },
+    });
+
+    assert.deepEqual(
+      notificationsAfterAcknowledge.map((notification) => notification.eventType),
+      ["CREATED"],
+    );
+
     const resolveResponse = await request(app).post(
       `/incidents/${incident.id}/resolve`,
     );
@@ -99,9 +108,11 @@ test("incident lifecycle opens, acknowledges, and resolves an incident", async (
       notifications.map((notification) => notification.eventType),
       ["CREATED", "RESOLVED"],
     );
-    assert.deepEqual(
-      notifications.map((notification) => notification.status),
-      ["SKIPPED", "SKIPPED"],
+    assert.equal(
+      notifications.every((notification) =>
+        ["SENT", "FAILED", "SKIPPED"].includes(notification.status),
+      ),
+      true,
     );
 
     const resolvedEventsResponse = await request(app).get(

@@ -42,11 +42,6 @@ function createIncidentRoutes(prisma) {
       });
     }
 
-    await sendIncidentNotification(prisma, {
-      action: "RESOLVED",
-      incident: result.incident,
-    });
-
     res.status(200).json({ incident: result.incident });
   });
 
@@ -65,6 +60,11 @@ function createIncidentRoutes(prisma) {
         message: result.message,
       });
     }
+
+    await sendIncidentNotification(prisma, {
+      action: "RESOLVED",
+      incident: result.incident,
+    });
 
     res.status(200).json({ incident: result.incident });
   });
