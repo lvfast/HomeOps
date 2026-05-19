@@ -87,6 +87,28 @@ Check whether Discord notifications are being recorded:
 5. If no webhook URL is configured, the notification status should be
    `SKIPPED`.
 
+Check service metrics:
+
+1. Create a service.
+2. Run one or more checks with `POST /services/:id/check`.
+3. Call `GET /services/:id/metrics?range=24h`.
+4. Confirm the response includes `uptimePercentage`,
+   `averageResponseTimeMs`, `totalChecks`, `successfulChecks`, and
+   `failedChecks`.
+
+Check dashboard summary:
+
+1. Call `GET /dashboard/summary`.
+2. Confirm the response includes service counts, incident counts, and recent
+   incidents.
+
+Check public status:
+
+1. Call `GET /status`.
+2. Confirm the response includes only active services.
+3. Confirm internal statuses are mapped to public values such as
+   `OPERATIONAL`, `MAJOR_OUTAGE`, or `UNKNOWN`.
+
 ## View logs
 
 View infrastructure logs:

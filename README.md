@@ -236,6 +236,36 @@ Notification statuses:
 - `FAILED`
 - `SKIPPED`
 
+## Metrics and Public Status API
+
+HomeOps exposes read-only APIs that prepare data for the future dashboard and
+public status page:
+
+```text
+GET /services/:id/metrics?range=24h
+GET /dashboard/summary
+GET /status
+```
+
+Supported metrics ranges:
+
+- `1h`
+- `24h`
+- `7d`
+- `30d`
+
+Service metrics include:
+
+- uptime percentage
+- average response time
+- total checks
+- successful checks
+- failed checks
+
+The public status endpoint only returns active services and maps internal
+service states to public status values such as `OPERATIONAL`,
+`MAJOR_OUTAGE`, and `UNKNOWN`.
+
 ## Learning Workflow
 
 HomeOps is built with small, reviewable tasks.
@@ -255,5 +285,5 @@ For each task, the workflow is:
 
 ## Next Step
 
-The next feature PR is metrics and public status APIs: expose uptime, response
-time, dashboard summary, and public service status data.
+The next feature PR is a minimal frontend dashboard that consumes the backend
+service, incident, metrics, and public status APIs.

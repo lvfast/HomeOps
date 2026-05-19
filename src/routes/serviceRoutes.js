@@ -1,5 +1,9 @@
 const express = require("express");
 const { checkService } = require("../services/checkService");
+const {
+  calculateHealthCheckMetrics,
+  parseMetricsRange,
+} = require("../services/metrics");
 
 const editableFields = [
   "name",
@@ -46,6 +50,42 @@ function createServiceRoutes(prisma) {
     }
 
     res.status(200).json({ service });
+  });
+
+  router.get("/services/:id/metrics", async (req, res) => {
+    const service = await findService(prisma, req.params.id);
+
+    if (!service) {
+      return sendServiceNotFound(res);
+    }
+
+    const range = parseMetricsRange(req.query.range);
+
+    if (!range.ok) {
+      return res.status(400).json({
+        error: "Bad Request",
+        message: range.message,
+      });
+    }
+
+    const healthChecks = await prisma.healthCheck.findMany({
+      where: {
+        serviceId: service.id,
+        checkedAt: {
+          gte: range.startedAt,
+        },
+      },
+    });
+
+    res.status(200).json({
+      service: {
+        id: service.id,
+        name: service.name,
+        currentStatus: service.currentStatus,
+      },
+      range: range.range,
+      metrics: calculateHealthCheckMetrics(healthChecks),
+    });
   });
 
   router.post("/services/:id/check", async (req, res) => {
