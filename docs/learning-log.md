@@ -383,6 +383,60 @@ notification migration applied successfully and the full test suite passed.
 
 Review and commit the PR 7 diff, then push the branch and open a Pull Request.
 
+## 2026-05-19 - Metrics and public status APIs
+
+### What we worked on
+
+We started PR 8: metrics and public status APIs.
+
+### What changed
+
+We added APIs that prepare backend data for the future dashboard and public
+status page:
+
+- `GET /services/:id/metrics?range=24h`
+- `GET /dashboard/summary`
+- `GET /status`
+
+The service metrics endpoint calculates uptime percentage, average response
+time, total checks, successful checks, and failed checks.
+
+### Commands used
+
+```bash
+git switch -c feat/metrics-public-status-api
+node --test test\metrics.test.js test\notifications.test.js test\incidentLifecycle.test.js
+npx.cmd prisma validate
+docker compose up -d postgres redis
+npm.cmd run prisma:migrate
+npm.cmd test
+```
+
+### Concepts learned
+
+- Metrics are numbers that summarize how the system behaves.
+- Uptime percentage shows how many checks succeeded in a selected time range.
+- A public status API should expose safe operational status, not internal
+  implementation details.
+- A dashboard summary API prepares data for a future UI without building the UI
+  yet.
+
+### What confused me
+
+The full test suite failed while PostgreSQL was not running. Starting Docker
+Compose and confirming migrations fixed the environment problem.
+
+### Questions to revisit
+
+- Should the public status endpoint hide service IDs before the app becomes
+  public on the internet?
+- Should metrics eventually support custom date ranges?
+- Should dashboard summary include notification health?
+
+### Next tiny step
+
+Review and commit the PR 8 diff, then push the branch and open a Pull Request.
+
 ## Entry template
 
 ### Date

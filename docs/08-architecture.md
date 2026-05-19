@@ -24,6 +24,7 @@ Architecture should stay simple until there is a real need for more complexity.
 - Background health check scheduler
 - Incident lifecycle and timeline
 - Discord incident alert notifications
+- Metrics and public status APIs
 
 Future components:
 
@@ -83,4 +84,22 @@ Incident lifecycle opens or resolves an Incident
   -> mark Notification as SENT or FAILED
   -> if DISCORD_WEBHOOK_URL is empty
   -> mark Notification as SKIPPED
+
+Metrics and public status flow:
+
+Client or future dashboard
+  -> GET /services/:id/metrics?range=24h
+  -> read HealthCheck records in the selected range
+  -> calculate uptime percentage, average response time, and check counts
+
+Client or future dashboard
+  -> GET /dashboard/summary
+  -> count services by status
+  -> count active incidents
+  -> return recent incidents
+
+Public visitor or future status page
+  -> GET /status
+  -> read active services
+  -> map internal service status to public status
 ```

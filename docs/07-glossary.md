@@ -146,6 +146,27 @@ alerts are sent when incidents open or resolve.
 How long a request takes to receive a response. HomeOps stores response time in
 milliseconds.
 
+## Uptime percentage
+
+The percentage of health checks that succeeded in a selected time range. For
+example, if 9 out of 10 checks succeed, uptime is 90%.
+
+## Metrics
+
+Numbers that summarize system behavior. In HomeOps, metrics include uptime
+percentage, average response time, total checks, successful checks, and failed
+checks.
+
+## Dashboard summary
+
+A small API response that gives the future dashboard enough data to show the
+current system overview.
+
+## Public status
+
+A safe status view for people who only need to know whether active services are
+operational, unknown, or in outage.
+
 ## Timeout
 
 The maximum time HomeOps waits for a service to respond before marking that
