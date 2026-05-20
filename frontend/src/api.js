@@ -25,6 +25,16 @@ export function getServices() {
   return fetchJson("/services");
 }
 
+export function createService(payload) {
+  return fetchJson("/services", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
 export function getService(id) {
   return fetchJson(`/services/${id}`);
 }

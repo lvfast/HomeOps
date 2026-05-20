@@ -492,8 +492,6 @@ now `npm run dev` or `npm run frontend:dev`, and the dashboard opens at
 Run backend tests when Docker Desktop is available, review the PR 9 diff, then
 commit and open a Pull Request.
 
-## Entry template
-
 ## 2026-05-20 - Frontend service actions
 
 ### What we worked on
@@ -537,6 +535,53 @@ TBD
 ### Next tiny step
 
 Run the backend with PostgreSQL and verify the buttons in the browser.
+
+## 2026-05-20 - Frontend service creation form
+
+### What we worked on
+
+We started the next frontend PR after service action buttons.
+
+### What changed
+
+We added a service creation form to the dashboard. The form lets a user create a
+monitored HTTP service from the browser instead of calling the API manually.
+
+The dashboard reloads after a successful create so the new service appears in
+the service list.
+
+### Commands used
+
+```bash
+git switch main
+git pull
+git switch -c feat/frontend-service-create-form
+npm.cmd run frontend:build
+```
+
+### Concepts learned
+
+- A form collects user input before sending it to the backend.
+- Browser form values arrive as strings, so numeric fields must be converted to
+  numbers before calling the API.
+- Keeping form data after an error helps the user fix one field without typing
+  everything again.
+
+### What confused me
+
+TBD
+
+### Questions to revisit
+
+- Should service editing use a similar form on the service detail page?
+- Should service creation optionally run the first health check immediately?
+
+### Next tiny step
+
+Manually test service creation in the browser with the backend and PostgreSQL
+running.
+
+## Entry template
 
 ### Date
 
