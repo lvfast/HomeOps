@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import EmptyState from "../components/EmptyState.jsx";
 import ErrorState from "../components/ErrorState.jsx";
 import LoadingState from "../components/LoadingState.jsx";
+import ServiceCreateForm from "../components/ServiceCreateForm.jsx";
 import ServiceList from "../components/ServiceList.jsx";
 import StatusBadge from "../components/StatusBadge.jsx";
 import SummaryCards from "../components/SummaryCards.jsx";
-import { getDashboardSummary, getServices } from "../api.js";
+import { createService, getDashboardSummary, getServices } from "../api.js";
 
 function DashboardPage() {
   const [state, setState] = useState({
@@ -14,43 +15,46 @@ function DashboardPage() {
     services: [],
     error: null,
   });
+  const [createState, setCreateState] = useState({
+    status: "idle",
+    message: null,
+  });
 
   useEffect(() => {
     let ignore = false;
 
-    async function loadDashboard() {
-      try {
-        const [summaryResponse, servicesResponse] = await Promise.all([
-          getDashboardSummary(),
-          getServices(),
-        ]);
-
-        if (!ignore) {
-          setState({
-            status: "ready",
-            summary: summaryResponse.summary,
-            services: servicesResponse.services,
-            error: null,
-          });
-        }
-      } catch (error) {
-        if (!ignore) {
-          setState({
-            status: "error",
-            summary: null,
-            services: [],
-            error: error.message,
-          });
-        }
-      }
-    }
-
-    loadDashboard();
+    loadDashboard(setState, () => ignore);
 
     return () => {
       ignore = true;
     };
   }, []);
+
+  async function handleCreateService(payload) {
+    try {
+      setCreateState({
+        status: "loading",
+        message: "Creating service...",
+      });
+
+      await createService(payload);
+      await loadDashboard(setState);
+
+      setCreateState({
+        status: "success",
+        message: "Service created.",
+      });
+
+      return true;
+    } catch (error) {
+      setCreateState({
+        status: "error",
+        message: error.message,
+      });
+
+      return false;
+    }
+  }
 
   if (state.status === "loading") {
     return <LoadingState label="Loading dashboard..." />;
@@ -77,10 +81,25 @@ function DashboardPage() {
 
       <SummaryCards summary={state.summary} />
 
+      <ServiceCreateForm
+        isSubmitting={createState.status === "loading"}
+        onCreate={handleCreateService}
+      />
+
+      {createState.message ? (
+        <p
+          className={`action-message ${
+            createState.status === "error" ? "action-error" : "action-success"
+          }`}
+        >
+          {createState.message}
+        </p>
+      ) : null}
+
       {state.services.length === 0 ? (
         <EmptyState
           title="No services yet"
-          message="Create a monitored service through the API to see it here."
+          message="Create a monitored service to see it here."
         />
       ) : (
         <ServiceList services={state.services} />
@@ -89,6 +108,33 @@ function DashboardPage() {
       <RecentIncidents incidents={state.summary.recentIncidents} />
     </div>
   );
+}
+
+async function loadDashboard(setState, shouldIgnore = () => false) {
+  try {
+    const [summaryResponse, servicesResponse] = await Promise.all([
+      getDashboardSummary(),
+      getServices(),
+    ]);
+
+    if (!shouldIgnore()) {
+      setState({
+        status: "ready",
+        summary: summaryResponse.summary,
+        services: servicesResponse.services,
+        error: null,
+      });
+    }
+  } catch (error) {
+    if (!shouldIgnore()) {
+      setState({
+        status: "error",
+        summary: null,
+        services: [],
+        error: error.message,
+      });
+    }
+  }
 }
 
 function RecentIncidents({ incidents }) {
