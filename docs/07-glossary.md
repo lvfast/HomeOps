@@ -162,6 +162,31 @@ checks.
 A small API response that gives the future dashboard enough data to show the
 current system overview.
 
+## Frontend
+
+The part of the app that runs in the browser. In HomeOps, the frontend is a
+React dashboard that calls backend APIs.
+
+## React
+
+A JavaScript library for building user interfaces from reusable pieces called
+components.
+
+## Component
+
+A reusable piece of UI. For example, HomeOps has components for status badges,
+summary cards, loading states, and error states.
+
+## Vite
+
+A frontend development tool. It starts a fast local dev server and builds the
+React app for production.
+
+## Proxy
+
+Forwarding one request to another server. In HomeOps, the Vite dev server
+proxies frontend API requests to the backend API on port `3000`.
+
 ## Public status
 
 A safe status view for people who only need to know whether active services are

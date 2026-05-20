@@ -6,13 +6,13 @@ The goal is to build a production-like monitoring and incident management system
 
 ## Current Status
 
-This repository is in the backend foundation phase.
+This repository is now in the early dashboard phase.
 
 At this stage, the project focuses on:
 
-- documenting the product idea
+- maintaining the backend monitoring APIs
+- showing the system state through a minimal React dashboard
 - learning Git and GitHub workflow
-- defining small milestones
 - building the project step by step
 
 The first minimal backend API has been added. It currently exposes a health check endpoint at `/health`.
@@ -25,6 +25,8 @@ added. Manual health checks now also update service status fields such as
 automatically checks active services when they are due. Services now create
 incidents when they go down, resolve incidents when they recover, and record
 Discord notification attempts for incident open and recovery events.
+The first Vite and React frontend dashboard has also been added so the backend
+data can be viewed in a browser.
 
 ## Intended MVP
 
@@ -48,7 +50,8 @@ The first useful version of HomeOps should let a user:
 
 ## Repository Structure
 
-This repository currently contains documentation and project workflow files.
+This repository contains the HomeOps backend, frontend, and project workflow
+files.
 
 - `.github/`: GitHub templates and workflow configuration
 - `.env.example`: safe example of environment variables the project may need
@@ -60,6 +63,7 @@ This repository currently contains documentation and project workflow files.
 - `package.json`: Node.js project metadata, scripts, and dependencies
 - `package-lock.json`: exact dependency versions installed by npm
 - `src/`: backend API source code
+- `frontend/`: Vite and React frontend dashboard
 - `docs/`: detailed learning, workflow, architecture, and operations notes
 
 The app source code is intentionally small right now. More components will be added one milestone at a time.
@@ -76,6 +80,7 @@ Install dependencies:
 
 ```bash
 npm install
+npm --prefix frontend install
 ```
 
 Create a local environment file:
@@ -102,10 +107,34 @@ Start the backend API:
 npm start
 ```
 
+Start the frontend dashboard in a second terminal:
+
+```bash
+npm run frontend:dev
+```
+
+Open the frontend:
+
+```text
+http://127.0.0.1:4173
+```
+
+For convenience, this root command does the same thing:
+
+```bash
+npm run dev
+```
+
 Run tests:
 
 ```bash
 npm test
+```
+
+Build the frontend:
+
+```bash
+npm run frontend:build
 ```
 
 Verify the health check endpoint in your browser:
@@ -266,6 +295,25 @@ The public status endpoint only returns active services and maps internal
 service states to public status values such as `OPERATIONAL`,
 `MAJOR_OUTAGE`, and `UNKNOWN`.
 
+## Frontend Dashboard
+
+The React frontend is in `frontend/` and is powered by Vite.
+
+Frontend routes:
+
+```text
+/                Dashboard
+/service/:id     Service detail
+/public-status   Public status page
+```
+
+During local development, Vite proxies API requests such as `/services`,
+`/dashboard/summary`, and `/status` to the backend API on
+`http://localhost:3000`.
+
+On this Windows setup, `npm run frontend:dev` builds the frontend and then runs
+Vite preview so React dependencies are served reliably.
+
 ## Learning Workflow
 
 HomeOps is built with small, reviewable tasks.
@@ -285,5 +333,5 @@ For each task, the workflow is:
 
 ## Next Step
 
-The next feature PR is a minimal frontend dashboard that consumes the backend
-service, incident, metrics, and public status APIs.
+The next feature PR can add service management actions to the frontend, such as
+creating, pausing, resuming, or manually checking a service.

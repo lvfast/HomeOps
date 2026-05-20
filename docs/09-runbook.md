@@ -29,6 +29,24 @@ should show a message like:
 Health check worker is polling every 5 seconds
 ```
 
+Start the frontend dashboard in a second terminal:
+
+```bash
+npm run frontend:dev
+```
+
+Open:
+
+```text
+http://127.0.0.1:4173
+```
+
+The shorter root command also works:
+
+```bash
+npm run dev
+```
+
 ## Stop the app
 
 Stop the API with `Ctrl+C` in the terminal where it is running.
@@ -109,6 +127,18 @@ Check public status:
 3. Confirm internal statuses are mapped to public values such as
    `OPERATIONAL`, `MAJOR_OUTAGE`, or `UNKNOWN`.
 
+Check the frontend dashboard:
+
+1. Start PostgreSQL and Redis.
+2. Run migrations.
+3. Start the backend API with `npm start`.
+4. Start the frontend with `npm run frontend:dev`.
+5. Open `http://127.0.0.1:4173`.
+6. Confirm the dashboard loads summary cards, service list, and recent
+   incidents.
+7. Open a service detail page and confirm metrics and recent health checks load.
+8. Open `http://127.0.0.1:4173/public-status` and confirm public status loads.
+
 ## View logs
 
 View infrastructure logs:
@@ -156,6 +186,17 @@ Steps:
 3. Check that enough time has passed since `lastCheckedAt`.
 4. Check `WORKER_POLL_INTERVAL_SECONDS` in `.env`.
 5. Check the API terminal for worker error logs.
+
+### Frontend dashboard does not load data
+
+Steps:
+
+1. Check that the backend API is running on port `3000`.
+2. Check that the frontend is running on port `4173`.
+3. Check the browser page for the error message.
+4. Check the backend terminal for API errors.
+5. Check that Vite proxy routes in `frontend/vite.config.js` still match the
+   backend API routes.
 
 ### Discord alert is not sent
 
