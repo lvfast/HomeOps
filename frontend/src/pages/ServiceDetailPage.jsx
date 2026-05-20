@@ -7,6 +7,9 @@ import {
   getService,
   getServiceHealthChecks,
   getServiceMetrics,
+  pauseService,
+  resumeService,
+  runServiceCheck,
 } from "../api.js";
 
 function ServiceDetailPage() {
@@ -18,47 +21,42 @@ function ServiceDetailPage() {
     healthChecks: [],
     error: null,
   });
+  const [actionState, setActionState] = useState({
+    status: "idle",
+    message: null,
+  });
 
   useEffect(() => {
     let ignore = false;
 
-    async function loadService() {
-      try {
-        const [serviceResponse, metricsResponse, healthChecksResponse] =
-          await Promise.all([
-            getService(id),
-            getServiceMetrics(id),
-            getServiceHealthChecks(id),
-          ]);
-
-        if (!ignore) {
-          setState({
-            status: "ready",
-            service: serviceResponse.service,
-            metrics: metricsResponse.metrics,
-            healthChecks: healthChecksResponse.healthChecks.slice(0, 10),
-            error: null,
-          });
-        }
-      } catch (error) {
-        if (!ignore) {
-          setState({
-            status: "error",
-            service: null,
-            metrics: null,
-            healthChecks: [],
-            error: error.message,
-          });
-        }
-      }
-    }
-
-    loadService();
+    loadService(id, setState, () => ignore);
 
     return () => {
       ignore = true;
     };
   }, [id]);
+
+  async function handleRunCheck() {
+    await runServiceAction({
+      action: () => runServiceCheck(id),
+      successMessage: "Health check completed.",
+      id,
+      setActionState,
+      setState,
+    });
+  }
+
+  async function handleToggleActive() {
+    const isActive = state.service.isActive;
+
+    await runServiceAction({
+      action: () => (isActive ? pauseService(id) : resumeService(id)),
+      successMessage: isActive ? "Service paused." : "Service resumed.",
+      id,
+      setActionState,
+      setState,
+    });
+  }
 
   if (state.status === "loading") {
     return <LoadingState label="Loading service..." />;
@@ -79,8 +77,36 @@ function ServiceDetailPage() {
           <p className="eyebrow">Service detail</p>
           <h1>{state.service.name}</h1>
         </div>
-        <StatusBadge status={state.service.currentStatus} />
+        <div className="heading-actions">
+          <StatusBadge status={state.service.currentStatus} />
+          <button
+            className="button secondary-button"
+            disabled={actionState.status === "loading"}
+            type="button"
+            onClick={handleToggleActive}
+          >
+            {state.service.isActive ? "Pause" : "Resume"}
+          </button>
+          <button
+            className="button primary-button"
+            disabled={actionState.status === "loading"}
+            type="button"
+            onClick={handleRunCheck}
+          >
+            Check now
+          </button>
+        </div>
       </section>
+
+      {actionState.message ? (
+        <p
+          className={`action-message ${
+            actionState.status === "error" ? "action-error" : "action-success"
+          }`}
+        >
+          {actionState.message}
+        </p>
+      ) : null}
 
       <section className="panel detail-grid">
         <div>
@@ -105,6 +131,65 @@ function ServiceDetailPage() {
       <HealthChecksPanel healthChecks={state.healthChecks} />
     </div>
   );
+}
+
+async function loadService(id, setState, shouldIgnore = () => false) {
+  try {
+    const [serviceResponse, metricsResponse, healthChecksResponse] =
+      await Promise.all([
+        getService(id),
+        getServiceMetrics(id),
+        getServiceHealthChecks(id),
+      ]);
+
+    if (!shouldIgnore()) {
+      setState({
+        status: "ready",
+        service: serviceResponse.service,
+        metrics: metricsResponse.metrics,
+        healthChecks: healthChecksResponse.healthChecks.slice(0, 10),
+        error: null,
+      });
+    }
+  } catch (error) {
+    if (!shouldIgnore()) {
+      setState({
+        status: "error",
+        service: null,
+        metrics: null,
+        healthChecks: [],
+        error: error.message,
+      });
+    }
+  }
+}
+
+async function runServiceAction({
+  action,
+  successMessage,
+  id,
+  setActionState,
+  setState,
+}) {
+  try {
+    setActionState({
+      status: "loading",
+      message: "Working...",
+    });
+
+    await action();
+    await loadService(id, setState);
+
+    setActionState({
+      status: "success",
+      message: successMessage,
+    });
+  } catch (error) {
+    setActionState({
+      status: "error",
+      message: error.message,
+    });
+  }
 }
 
 function MetricsPanel({ metrics }) {
