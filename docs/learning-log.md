@@ -494,6 +494,50 @@ commit and open a Pull Request.
 
 ## Entry template
 
+## 2026-05-20 - Frontend service actions
+
+### What we worked on
+
+We started the next small frontend step after the minimal dashboard.
+
+### What changed
+
+We added service action buttons to the service detail page:
+
+- pause a monitored service
+- resume a paused service
+- run a manual health check
+
+After each action, the page reloads the service data from the backend so the UI
+shows the latest service status, metrics, and health check history.
+
+### Commands used
+
+```bash
+git switch -c feat/frontend-service-actions
+npm.cmd run frontend:build
+```
+
+### Concepts learned
+
+- A UI action is a user-triggered operation, such as clicking a button.
+- Frontend state should show whether an action is loading, successful, or failed.
+- Reloading data from the backend after an action is a simple way to keep the UI
+  consistent.
+
+### What confused me
+
+TBD
+
+### Questions to revisit
+
+- Should the dashboard list also expose quick actions later?
+- Should manual checks show more detailed success and failure messages?
+
+### Next tiny step
+
+Run the backend with PostgreSQL and verify the buttons in the browser.
+
 ### Date
 
 YYYY-MM-DD
