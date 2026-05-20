@@ -437,6 +437,61 @@ Compose and confirming migrations fixed the environment problem.
 
 Review and commit the PR 8 diff, then push the branch and open a Pull Request.
 
+## 2026-05-19 - Minimal frontend dashboard
+
+### What we worked on
+
+We started PR 9: minimal frontend dashboard.
+
+### What changed
+
+We added a Vite and React frontend in `frontend/`.
+
+The frontend includes:
+
+- a dashboard page at `/`
+- a service detail page at `/service/:id`
+- a public status page at `/public-status`
+- shared UI components for status badges, summary cards, loading states, empty
+  states, and error states
+- a small API client that calls the existing backend endpoints
+
+### Commands used
+
+```bash
+git switch -c feat/minimal-frontend-dashboard
+npm --prefix frontend install
+npm run frontend:build
+npx.cmd prisma validate
+```
+
+### Concepts learned
+
+- A frontend runs in the browser and calls backend APIs.
+- React builds UI from reusable components.
+- Vite provides a local frontend dev server and production build command.
+- A proxy lets the frontend dev server forward API requests to the backend.
+- Frontend routes should avoid conflicting with backend API routes.
+
+### What confused me
+
+The first Vite dev server showed a blank page on Windows because React
+dependencies were not served correctly in dev mode. We changed the frontend dev
+script so it builds first and then runs Vite preview. The practical command is
+now `npm run dev` or `npm run frontend:dev`, and the dashboard opens at
+`http://127.0.0.1:4173`.
+
+### Questions to revisit
+
+- Should the frontend eventually use charts for response time and uptime?
+- Should service create, pause, resume, and manual check actions be added next?
+- Should the public status page hide service IDs before internet exposure?
+
+### Next tiny step
+
+Run backend tests when Docker Desktop is available, review the PR 9 diff, then
+commit and open a Pull Request.
+
 ## Entry template
 
 ### Date

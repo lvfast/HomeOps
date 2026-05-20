@@ -16,6 +16,7 @@ Architecture should stay simple until there is a real need for more complexity.
 ## Current components
 
 - Express API server
+- Vite and React frontend dashboard
 - PostgreSQL database
 - Prisma schema and migrations
 - Docker Compose for local PostgreSQL and Redis
@@ -28,7 +29,6 @@ Architecture should stay simple until there is a real need for more complexity.
 
 Future components:
 
-- Web app
 - Queue
 - Reverse proxy
 - Monitoring
@@ -102,4 +102,22 @@ Public visitor or future status page
   -> GET /status
   -> read active services
   -> map internal service status to public status
+
+Frontend dashboard flow:
+
+Browser
+  -> Vite dev server on http://localhost:5173
+  -> React route /
+  -> fetch /dashboard/summary and /services through the Vite proxy
+  -> Express API on http://localhost:3000
+  -> Prisma Client
+  -> PostgreSQL
+
+Browser
+  -> React route /service/:id
+  -> fetch /services/:id, /services/:id/metrics, and /services/:id/health-checks
+
+Browser
+  -> React route /public-status
+  -> fetch /status
 ```

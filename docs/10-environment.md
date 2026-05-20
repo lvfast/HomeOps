@@ -17,6 +17,7 @@ Another machine should be able to run the project using only:
 Local development uses:
 
 - Node.js and npm for the backend API
+- Vite and React for the frontend dashboard
 - Docker Compose for PostgreSQL and Redis
 - Prisma for database schema and migrations
 - A simple in-process background worker for automatic health checks
@@ -25,11 +26,26 @@ The usual setup flow is:
 
 ```bash
 npm install
+npm --prefix frontend install
 cp .env.example .env
 docker compose up -d postgres redis
 npm run prisma:migrate
 npm start
 ```
+
+Start the frontend dashboard in a second terminal:
+
+```bash
+npm run frontend:dev
+```
+
+The shorter root command also works:
+
+```bash
+npm run dev
+```
+
+Both commands serve the frontend at `http://127.0.0.1:4173`.
 
 On Windows PowerShell, if `npm test` is blocked by execution policy, use:
 
@@ -49,6 +65,8 @@ Current Node.js dependencies are recorded in:
 
 - `package.json`
 - `package-lock.json`
+- `frontend/package.json`
+- `frontend/package-lock.json`
 
 Current Docker services are recorded in:
 
@@ -77,10 +95,12 @@ To rebuild the local environment from scratch:
 
 ```bash
 npm install
+npm --prefix frontend install
 cp .env.example .env
 docker compose up -d postgres redis
 npm run prisma:migrate
 npm run prisma:generate
+npm run frontend:build
 npm.cmd test
 ```
 
